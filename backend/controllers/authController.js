@@ -1,24 +1,9 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const isProduction = process.env.NODE_ENV === "production";
-
-const cookieOptions = {
-  httpOnly: true,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  sameSite: isProduction ? "none" : "lax",
-  secure: isProduction,
-};
 
 const createToken = (user) =>
   jwt.sign({ id: user._id, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-const cookieOptions = {
-  httpOnly: true,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  sameSite: "lax",
-  secure: false,
-};
 
 const formatUser = (user) => ({
   id: user._id,
@@ -43,8 +28,7 @@ exports.register = async (req, res) => {
     const hashed = await bcrypt.hash(password, 12);
     const user = await User.create({ name, email, password: hashed, profileSetupDone: false });
     const token = createToken(user);
-    res.cookie("token", token, cookieOptions);
-    res.status(201).json({ message: "Account created!", user: formatUser(user) });
+    res.status(201).json({ message: "Account created!", token, user: formatUser(user) });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -64,15 +48,13 @@ exports.login = async (req, res) => {
     if (!match) return res.status(400).json({ message: "Incorrect password" });
 
     const token = createToken(user);
-    res.cookie("token", token, cookieOptions);
-    res.json({ message: "Logged in!", user: formatUser(user) });
+    res.json({ message: "Logged in!", token, user: formatUser(user) });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("token");
   res.json({ message: "Logged out" });
 };
 
