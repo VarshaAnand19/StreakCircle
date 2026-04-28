@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://streakcircle-backend.onrender.com";
 axios.defaults.withCredentials = true;
 
 const AuthContext = createContext();
