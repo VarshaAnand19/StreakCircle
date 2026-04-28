@@ -15,17 +15,22 @@ export default function ProfileSetup() {
     if (!form.gender || !form.birthday || !form.city || !form.nationality)
       return setError("Please fill in all fields");
     setLoading(true);
+    setError("");
     try {
-      const res = await axios.put("/api/auth/profile", {
-        birthday: form.birthday,
-        location: `${form.city}, ${form.nationality}`,
-        gender: form.gender,
-        profileSetupDone: true,
-      });
+      const res = await axios.put(
+        "https://streakcircle-backend.onrender.com/api/auth/profile",
+        {
+          birthday: form.birthday,
+          location: `${form.city}, ${form.nationality}`,
+          gender: form.gender,
+          profileSetupDone: true,
+        },
+        { withCredentials: true }
+      );
       setUser(res.data.user);
     } catch (err) {
-      console.error(err.response?.data);
-      setError("Failed to save profile");
+      console.error("Profile save error:", err.response?.data);
+      setError(err.response?.data?.message || "Failed to save profile");
     } finally {
       setLoading(false);
     }
