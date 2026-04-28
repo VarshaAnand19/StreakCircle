@@ -17,16 +17,12 @@ export default function ProfileSetup() {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.put(
-        "https://streakcircle-backend.onrender.com/api/auth/profile",
-        {
-          birthday: form.birthday,
-          location: `${form.city}, ${form.nationality}`,
-          gender: form.gender,
-          profileSetupDone: true,
-        },
-        { withCredentials: true }
-      );
+      const res = await axios.put("/api/auth/profile", {
+        birthday: form.birthday,
+        location: `${form.city}, ${form.nationality}`,
+        gender: form.gender,
+        profileSetupDone: true,
+      });
       setUser(res.data.user);
     } catch (err) {
       console.error("Profile save error:", err.response?.data);
